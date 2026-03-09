@@ -1,5 +1,6 @@
 package br.com.techmarket_identity_service.model;
 
+import br.com.techmarket_identity_service.model.enums.StatusUsuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,4 +32,8 @@ public class Usuario {
 
     @Column(nullable = false, length = 100)
     private String senha;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusUsuario status;
 }
