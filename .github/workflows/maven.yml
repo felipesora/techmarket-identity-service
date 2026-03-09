@@ -55,9 +55,3 @@ jobs:
 
       - name: Build e testes com Maven
         run: mvn -B clean verify
-
-      - name: Publicar resultados dos testes
-        if: always()
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          files: target/surefire-reports/*.xml
