@@ -52,7 +52,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public void deletar(Long id) {
+    public void deletarUsuario(Long id) {
         var usuario = buscarEntidadeUsuarioPorId(id);
         usuarioRepository.delete(usuario);
     }
