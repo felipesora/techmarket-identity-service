@@ -1,6 +1,7 @@
 package br.com.techmarket_identity_service.dto.usuario;
 
 import br.com.techmarket_identity_service.model.enums.StatusUsuario;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -35,4 +36,8 @@ public class UsuarioUpdateDTO {
 
     @NotNull(message = "Status do usuário é obrigatório")
     private StatusUsuario status;
+
+    @NotNull(message = "Perfil é obrigatório")
+    @JsonProperty("id_perfil")
+    private Long perfilId;
 }
