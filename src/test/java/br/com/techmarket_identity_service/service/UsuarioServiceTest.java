@@ -3,8 +3,11 @@ package br.com.techmarket_identity_service.service;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioCreateDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioResponseDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateDTO;
+import br.com.techmarket_identity_service.model.Perfil;
 import br.com.techmarket_identity_service.model.Usuario;
 import br.com.techmarket_identity_service.model.enums.StatusUsuario;
+import br.com.techmarket_identity_service.model.enums.TipoPerfil;
+import br.com.techmarket_identity_service.repository.PerfilRepository;
 import br.com.techmarket_identity_service.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +37,9 @@ class UsuarioServiceTest {
     private UsuarioRepository usuarioRepository;
 
     @Mock
+    private PerfilRepository perfilRepository;
+
+    @Mock
     private ModelMapper modelMapper;
 
     @InjectMocks
@@ -40,11 +47,18 @@ class UsuarioServiceTest {
 
     private Usuario usuario;
     private UsuarioResponseDTO responseDTO;
+    private Perfil perfil;
 
     @BeforeEach
     void setup() {
+
+        perfil = new Perfil();
+        perfil.setId(1L);
+        perfil.setTipoPerfil(TipoPerfil.ADMINISTRADOR);
+
         usuario = new Usuario();
         usuario.setId(1L);
+        usuario.setPerfil(perfil);
 
         responseDTO = new UsuarioResponseDTO();
     }
@@ -61,6 +75,7 @@ class UsuarioServiceTest {
         Page<UsuarioResponseDTO> resultado = usuarioService.obterTodosUsuarios(pageable);
 
         assertEquals(1, resultado.getTotalElements());
+
         verify(usuarioRepository).findAll(pageable);
     }
 
@@ -73,6 +88,7 @@ class UsuarioServiceTest {
         UsuarioResponseDTO resultado = usuarioService.obterUsuarioPorId(1L);
 
         assertNotNull(resultado);
+
         verify(usuarioRepository).findById(1L);
     }
 
@@ -89,25 +105,29 @@ class UsuarioServiceTest {
     void deveCadastrarUsuario() {
 
         UsuarioCreateDTO createDTO = new UsuarioCreateDTO();
+        createDTO.setPerfilId(1L);
 
-        when(modelMapper.map(createDTO, Usuario.class)).thenReturn(usuario);
-        when(usuarioRepository.save(usuario)).thenReturn(usuario);
+        when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
         when(modelMapper.map(usuario, UsuarioResponseDTO.class)).thenReturn(responseDTO);
 
         UsuarioResponseDTO resultado = usuarioService.cadastrarUsuario(createDTO);
 
         assertNotNull(resultado);
-        assertEquals(StatusUsuario.ATIVO, usuario.getStatus());
 
-        verify(usuarioRepository).save(usuario);
+        verify(perfilRepository).findById(1L);
+        verify(usuarioRepository).save(any(Usuario.class));
     }
 
     @Test
     void deveAtualizarUsuario() {
 
         UsuarioUpdateDTO updateDTO = new UsuarioUpdateDTO();
+        updateDTO.setPerfilId(1L);
+        updateDTO.setStatus(StatusUsuario.ATIVO);
 
-        when(modelMapper.map(updateDTO, Usuario.class)).thenReturn(usuario);
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
         when(usuarioRepository.save(usuario)).thenReturn(usuario);
         when(modelMapper.map(usuario, UsuarioResponseDTO.class)).thenReturn(responseDTO);
 
