@@ -189,7 +189,7 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.status", is(400)))
                 .andExpect(jsonPath("$.message", is("Erro de validação")))
                 .andExpect(jsonPath("$.errors", notNullValue()))
-                .andExpect(jsonPath("$.errors.nome", is("O nome deve ter entre 3 e 150 caracteres")))
+                .andExpect(jsonPath("$.errors.nome", is("Nome é obrigatório")))
                 .andExpect(jsonPath("$.errors.email", is("E-mail no formato inválido")))
                 .andExpect(jsonPath("$.errors.cpf", is("O cpf deve ter 11 caracteres")));
 
