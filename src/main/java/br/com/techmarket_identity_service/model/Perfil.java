@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "TM_PERFIL")
 @Getter
@@ -24,4 +26,7 @@ public class Perfil {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "tipo_perfil")
     private TipoPerfil tipoPerfil;
+
+    @OneToMany(mappedBy = "perfil", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Usuario> usuarios;
 }

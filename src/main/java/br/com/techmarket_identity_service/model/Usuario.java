@@ -36,4 +36,8 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusUsuario status;
+
+    @ManyToOne
+    @JoinColumn(name = "id_perfil")
+    private Perfil perfil;
 }

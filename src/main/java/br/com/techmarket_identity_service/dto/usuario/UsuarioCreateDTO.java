@@ -1,6 +1,7 @@
 package br.com.techmarket_identity_service.dto.usuario;
 
 import br.com.techmarket_identity_service.model.enums.StatusUsuario;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,4 +33,8 @@ public class UsuarioCreateDTO {
     @NotBlank(message = "A senha é obrigatória")
     @Size(min = 6, max = 150, message = "A senha deve ter entre 6 e 100 caracteres")
     private String senha;
+
+    @NotNull(message = "Perfil é obrigatório")
+    @JsonProperty("id_perfil")
+    private Long perfilId;
 }

@@ -5,6 +5,7 @@ import br.com.techmarket_identity_service.dto.usuario.UsuarioResponseDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateDTO;
 import br.com.techmarket_identity_service.model.Usuario;
 import br.com.techmarket_identity_service.model.enums.StatusUsuario;
+import br.com.techmarket_identity_service.repository.PerfilRepository;
 import br.com.techmarket_identity_service.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -23,32 +24,55 @@ public class UsuarioService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PerfilRepository perfilRepository;
+
     public Page<UsuarioResponseDTO> obterTodosUsuarios(Pageable paginacao) {
         return usuarioRepository
                 .findAll(paginacao)
-                .map(u -> modelMapper.map(u, UsuarioResponseDTO.class));
+                .map(this::converterParaDTO);
     }
 
     public UsuarioResponseDTO obterUsuarioPorId(Long id) {
         Usuario usuario = buscarEntidadeUsuarioPorId(id);
-        return modelMapper.map(usuario, UsuarioResponseDTO.class);
+        return converterParaDTO(usuario);
     }
 
     @Transactional
     public UsuarioResponseDTO cadastrarUsuario(UsuarioCreateDTO dto) {
-        Usuario usuarioEntity = modelMapper.map(dto, Usuario.class);
-        usuarioEntity.setStatus(StatusUsuario.ATIVO);
-        usuarioRepository.save(usuarioEntity);
+        var perfil = perfilRepository.findById(dto.getPerfilId())
+                        .orElseThrow(() -> new EntityNotFoundException("Perfil com id: " + dto.getPerfilId() + " não encontrado"));
 
-        return modelMapper.map(usuarioEntity, UsuarioResponseDTO.class);
+        Usuario usuarioEntity = new Usuario();
+        usuarioEntity.setNome(dto.getNome());
+        usuarioEntity.setEmail(dto.getEmail());
+        usuarioEntity.setCpf(dto.getCpf());
+        usuarioEntity.setSenha(dto.getSenha());
+        usuarioEntity.setStatus(StatusUsuario.ATIVO);
+        usuarioEntity.setPerfil(perfil);
+
+        usuarioEntity = usuarioRepository.save(usuarioEntity);
+        return converterParaDTO(usuarioEntity);
     }
 
     @Transactional
     public UsuarioResponseDTO atualizarUsuario(Long id, UsuarioUpdateDTO dto) {
-        Usuario usuarioEntity = modelMapper.map(dto, Usuario.class);
-        usuarioEntity.setId(id);
-        usuarioEntity = usuarioRepository.save(usuarioEntity);
-        return modelMapper.map(usuarioEntity, UsuarioResponseDTO.class);
+        Usuario usuarioEntity = buscarEntidadeUsuarioPorId(id);
+
+        var perfil = perfilRepository.findById(dto.getPerfilId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Perfil com id: " + dto.getPerfilId() + " não encontrado"));
+
+        usuarioEntity.setNome(dto.getNome());
+        usuarioEntity.setEmail(dto.getEmail());
+        usuarioEntity.setCpf(dto.getCpf());
+        usuarioEntity.setSenha(dto.getSenha());
+        usuarioEntity.setStatus(dto.getStatus());
+        usuarioEntity.setPerfil(perfil);
+
+        usuarioRepository.save(usuarioEntity);
+
+        return converterParaDTO(usuarioEntity);
     }
 
     @Transactional
@@ -60,5 +84,12 @@ public class UsuarioService {
     private Usuario buscarEntidadeUsuarioPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário com id: " + id + " não encontrado"));
+    }
+
+    private UsuarioResponseDTO converterParaDTO(Usuario usuario) {
+        UsuarioResponseDTO dto = modelMapper.map(usuario, UsuarioResponseDTO.class);
+        dto.setTipoPerfil(usuario.getPerfil().getTipoPerfil());
+
+        return dto;
     }
 }
