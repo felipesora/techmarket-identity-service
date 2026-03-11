@@ -21,12 +21,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +43,9 @@ class UsuarioServiceTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UsuarioService usuarioService;
@@ -106,8 +111,10 @@ class UsuarioServiceTest {
 
         UsuarioCreateDTO createDTO = new UsuarioCreateDTO();
         createDTO.setPerfilId(1L);
+        createDTO.setSenha("senha123");
 
         when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
+        when(passwordEncoder.encode(anyString())).thenReturn("senhaCodificada");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
         when(modelMapper.map(usuario, UsuarioResponseDTO.class)).thenReturn(responseDTO);
 
@@ -116,6 +123,7 @@ class UsuarioServiceTest {
         assertNotNull(resultado);
 
         verify(perfilRepository).findById(1L);
+        verify(passwordEncoder).encode(anyString());
         verify(usuarioRepository).save(any(Usuario.class));
     }
 
@@ -125,9 +133,11 @@ class UsuarioServiceTest {
         UsuarioUpdateDTO updateDTO = new UsuarioUpdateDTO();
         updateDTO.setPerfilId(1L);
         updateDTO.setStatus(StatusUsuario.ATIVO);
+        updateDTO.setSenha("novaSenha123");
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
         when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
+        when(passwordEncoder.encode(anyString())).thenReturn("senhaCodificada");
         when(usuarioRepository.save(usuario)).thenReturn(usuario);
         when(modelMapper.map(usuario, UsuarioResponseDTO.class)).thenReturn(responseDTO);
 
@@ -137,6 +147,7 @@ class UsuarioServiceTest {
         assertEquals(1L, usuario.getId());
 
         verify(usuarioRepository).save(usuario);
+        verify(passwordEncoder).encode(anyString());
     }
 
     @Test
