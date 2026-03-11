@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +21,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -47,7 +51,7 @@ public class UsuarioService {
         usuarioEntity.setNome(dto.getNome());
         usuarioEntity.setEmail(dto.getEmail());
         usuarioEntity.setCpf(dto.getCpf());
-        usuarioEntity.setSenha(dto.getSenha());
+        usuarioEntity.setSenha(passwordEncoder.encode(dto.getSenha()));
         usuarioEntity.setStatus(StatusUsuario.ATIVO);
         usuarioEntity.setPerfil(perfil);
 
@@ -66,7 +70,7 @@ public class UsuarioService {
         usuarioEntity.setNome(dto.getNome());
         usuarioEntity.setEmail(dto.getEmail());
         usuarioEntity.setCpf(dto.getCpf());
-        usuarioEntity.setSenha(dto.getSenha());
+        usuarioEntity.setSenha(passwordEncoder.encode(dto.getSenha()));
         usuarioEntity.setStatus(dto.getStatus());
         usuarioEntity.setPerfil(perfil);
 
