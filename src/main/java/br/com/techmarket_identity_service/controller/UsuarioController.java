@@ -20,8 +20,11 @@ import java.net.URI;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
+
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @GetMapping
     public ResponseEntity<Page<UsuarioResponseDTO>> listarTodosUsuarios(@PageableDefault(size = 10) Pageable paginacao) {

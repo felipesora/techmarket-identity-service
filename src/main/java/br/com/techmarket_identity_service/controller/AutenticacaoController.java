@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth/login")
 public class AutenticacaoController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
+    public AutenticacaoController(AuthenticationManager authenticationManager, JwtService jwtService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping
     public ResponseEntity efetuarLogin(@RequestBody @Valid LoginRequestDTO dto) {
