@@ -42,9 +42,6 @@ class UsuarioServiceTest {
     private PerfilRepository perfilRepository;
 
     @Mock
-    private ModelMapper modelMapper;
-
-    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
@@ -65,7 +62,14 @@ class UsuarioServiceTest {
         usuario.setId(1L);
         usuario.setPerfil(perfil);
 
-        responseDTO = new UsuarioResponseDTO();
+        responseDTO = new UsuarioResponseDTO(
+                1L,
+                "João Silva",
+                "joao@email.com",
+                "12345678901",
+                StatusUsuario.ATIVO,
+                TipoPerfil.ADMINISTRADOR
+        );
     }
 
     @Test
@@ -75,7 +79,6 @@ class UsuarioServiceTest {
         Page<Usuario> usuariosPage = new PageImpl<>(List.of(usuario));
 
         when(usuarioRepository.findAll(pageable)).thenReturn(usuariosPage);
-        when(modelMapper.map(usuario, UsuarioResponseDTO.class)).thenReturn(responseDTO);
 
         Page<UsuarioResponseDTO> resultado = usuarioService.obterTodosUsuarios(pageable);
 
@@ -88,7 +91,6 @@ class UsuarioServiceTest {
     void deveRetornarUsuarioPorId() {
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(modelMapper.map(usuario, UsuarioResponseDTO.class)).thenReturn(responseDTO);
 
         UsuarioResponseDTO resultado = usuarioService.obterUsuarioPorId(1L);
 
@@ -109,14 +111,17 @@ class UsuarioServiceTest {
     @Test
     void deveCadastrarUsuario() {
 
-        UsuarioCreateDTO createDTO = new UsuarioCreateDTO();
-        createDTO.setPerfilId(1L);
-        createDTO.setSenha("senha123");
+        UsuarioCreateDTO createDTO = new UsuarioCreateDTO(
+                "João Silva",
+                "joao@email.com",
+                "12345678901",
+                "senha123",
+                1L
+        );
 
         when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
         when(passwordEncoder.encode(anyString())).thenReturn("senhaCodificada");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
-        when(modelMapper.map(usuario, UsuarioResponseDTO.class)).thenReturn(responseDTO);
 
         UsuarioResponseDTO resultado = usuarioService.cadastrarUsuario(createDTO);
 
@@ -130,16 +135,19 @@ class UsuarioServiceTest {
     @Test
     void deveAtualizarUsuario() {
 
-        UsuarioUpdateDTO updateDTO = new UsuarioUpdateDTO();
-        updateDTO.setPerfilId(1L);
-        updateDTO.setStatus(StatusUsuario.ATIVO);
-        updateDTO.setSenha("novaSenha123");
+        UsuarioUpdateDTO updateDTO = new UsuarioUpdateDTO(
+                "João Silva",
+                "joao@email.com",
+                "12345678901",
+                "novaSenha123",
+                StatusUsuario.ATIVO,
+                1L
+        );
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
         when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
         when(passwordEncoder.encode(anyString())).thenReturn("senhaCodificada");
         when(usuarioRepository.save(usuario)).thenReturn(usuario);
-        when(modelMapper.map(usuario, UsuarioResponseDTO.class)).thenReturn(responseDTO);
 
         UsuarioResponseDTO resultado = usuarioService.atualizarUsuario(1L, updateDTO);
 

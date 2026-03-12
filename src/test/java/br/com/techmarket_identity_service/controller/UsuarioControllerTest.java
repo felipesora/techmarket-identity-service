@@ -65,28 +65,31 @@ class UsuarioControllerTest {
         objectMapper = new ObjectMapper();
 
         // Setup DTOs de exemplo
-        usuarioResponseDTO = new UsuarioResponseDTO();
-        usuarioResponseDTO.setId(1L);
-        usuarioResponseDTO.setNome("João Silva");
-        usuarioResponseDTO.setEmail("joao@email.com");
-        usuarioResponseDTO.setCpf("12345678901");
-        usuarioResponseDTO.setStatus(StatusUsuario.ATIVO);
-        usuarioResponseDTO.setTipoPerfil(TipoPerfil.ADMINISTRADOR);
+        usuarioResponseDTO = new UsuarioResponseDTO(
+                1L,
+                "João Silva",
+                "joao@email.com",
+                "12345678901",
+                StatusUsuario.ATIVO,
+                TipoPerfil.ADMINISTRADOR
+        );
 
-        usuarioCreateDTO = new UsuarioCreateDTO();
-        usuarioCreateDTO.setNome("João Silva");
-        usuarioCreateDTO.setEmail("joao@email.com");
-        usuarioCreateDTO.setCpf("12345678901");
-        usuarioCreateDTO.setSenha("senha123");
-        usuarioCreateDTO.setPerfilId(1L);
+        usuarioCreateDTO = new UsuarioCreateDTO(
+                "João Silva",
+                "joao@email.com",
+                "12345678901",
+                "senha123",
+                1L
+        );
 
-        usuarioUpdateDTO = new UsuarioUpdateDTO();
-        usuarioUpdateDTO.setNome("João Silva Atualizado");
-        usuarioUpdateDTO.setEmail("joao.atualizado@email.com");
-        usuarioUpdateDTO.setCpf("98765432101");
-        usuarioUpdateDTO.setSenha("senha456");
-        usuarioUpdateDTO.setStatus(StatusUsuario.ATIVO);
-        usuarioUpdateDTO.setPerfilId(2L);
+        usuarioUpdateDTO = new UsuarioUpdateDTO(
+                "João Silva Atualizado",
+                "joao.atualizado@email.com",
+                "98765432101",
+                "senha456",
+                StatusUsuario.ATIVO,
+                2L
+        );
     }
 
     @Test
@@ -177,9 +180,13 @@ class UsuarioControllerTest {
     @DisplayName("Deve retornar 400 ao cadastrar usuário com dados inválidos")
     void cadastrarUsuario_DeveRetornar400_QuandoDadosInvalidos() throws Exception {
         // Arrange
-        usuarioCreateDTO.setNome("Fe"); // Nome vazio para gerar erro de validação
-        usuarioCreateDTO.setEmail("email-invalido"); // Email inválido
-        usuarioCreateDTO.setCpf("123"); // CPF com tamanho inválido
+        usuarioCreateDTO = new UsuarioCreateDTO(
+                "Fe",
+                "email-invalido",
+                "123",
+                "senha123",
+                1L
+        );
 
         // Act & Assert
         mockMvc.perform(post("/usuarios")
@@ -200,13 +207,14 @@ class UsuarioControllerTest {
     @DisplayName("Deve atualizar usuário com sucesso")
     void atualizar_DeveAtualizarUsuario_QuandoDadosValidos() throws Exception {
         // Arrange
-        UsuarioResponseDTO usuarioAtualizadoDTO = new UsuarioResponseDTO();
-        usuarioAtualizadoDTO.setId(1L);
-        usuarioAtualizadoDTO.setNome(usuarioUpdateDTO.getNome());
-        usuarioAtualizadoDTO.setEmail(usuarioUpdateDTO.getEmail());
-        usuarioAtualizadoDTO.setCpf(usuarioUpdateDTO.getCpf());
-        usuarioAtualizadoDTO.setStatus(usuarioUpdateDTO.getStatus());
-        usuarioAtualizadoDTO.setTipoPerfil(TipoPerfil.USUARIO);
+        UsuarioResponseDTO usuarioAtualizadoDTO = new UsuarioResponseDTO(
+                1L,
+                usuarioUpdateDTO.nome(),
+                usuarioUpdateDTO.email(),
+                usuarioUpdateDTO.cpf(),
+                usuarioUpdateDTO.status(),
+                TipoPerfil.USUARIO
+        );
 
         when(usuarioService.atualizarUsuario(eq(1L), any(UsuarioUpdateDTO.class)))
                 .thenReturn(usuarioAtualizadoDTO);
@@ -278,8 +286,13 @@ class UsuarioControllerTest {
     @DisplayName("Deve validar tamanho mínimo dos campos")
     void validarTamanhoMinimo_Campos() throws Exception {
         // Arrange
-        usuarioCreateDTO.setNome("ab"); // Nome com menos de 3 caracteres
-        usuarioCreateDTO.setSenha("123"); // Senha com menos de 6 caracteres
+        usuarioCreateDTO = new UsuarioCreateDTO(
+                "ab",                 // nome inválido (<3)
+                "teste@email.com",   // email válido
+                "12345678901",       // cpf válido
+                "123",               // senha inválida (<6)
+                1L                   // perfil válido
+        );
 
         // Act & Assert
         mockMvc.perform(post("/usuarios")
@@ -297,7 +310,13 @@ class UsuarioControllerTest {
     @DisplayName("Deve validar campos obrigatórios no cadastro")
     void validarCamposObrigatorios_Cadastro() throws Exception {
         // Arrange
-        UsuarioCreateDTO dtoVazio = new UsuarioCreateDTO();
+        UsuarioCreateDTO dtoVazio = new UsuarioCreateDTO(
+                null,
+                null,
+                null,
+                null,
+                null
+        );
 
         // Act & Assert
         mockMvc.perform(post("/usuarios")

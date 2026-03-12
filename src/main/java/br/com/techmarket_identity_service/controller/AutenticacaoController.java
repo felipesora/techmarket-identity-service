@@ -18,15 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth/login")
 public class AutenticacaoController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
+    public AutenticacaoController(AuthenticationManager authenticationManager, JwtService jwtService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping
     public ResponseEntity efetuarLogin(@RequestBody @Valid LoginRequestDTO dto) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha());
+        var authenticationToken = new UsernamePasswordAuthenticationToken(dto.email(), dto.senha());
         var authentication = authenticationManager.authenticate(authenticationToken);
 
         var tokenJWT = jwtService.gerarToken((Usuario) authentication.getPrincipal());

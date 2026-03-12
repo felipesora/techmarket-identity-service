@@ -9,8 +9,6 @@ import br.com.techmarket_identity_service.repository.PerfilRepository;
 import br.com.techmarket_identity_service.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,17 +17,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final PerfilRepository perfilRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private PerfilRepository perfilRepository;
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, PerfilRepository perfilRepository) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.perfilRepository = perfilRepository;
+    }
 
     public Page<UsuarioResponseDTO> obterTodosUsuarios(Pageable paginacao) {
         return usuarioRepository
@@ -44,14 +40,14 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO cadastrarUsuario(UsuarioCreateDTO dto) {
-        var perfil = perfilRepository.findById(dto.getPerfilId())
-                        .orElseThrow(() -> new EntityNotFoundException("Perfil com id: " + dto.getPerfilId() + " não encontrado"));
+        var perfil = perfilRepository.findById(dto.perfilId())
+                        .orElseThrow(() -> new EntityNotFoundException("Perfil com id: " + dto.perfilId() + " não encontrado"));
 
         Usuario usuarioEntity = new Usuario();
-        usuarioEntity.setNome(dto.getNome());
-        usuarioEntity.setEmail(dto.getEmail());
-        usuarioEntity.setCpf(dto.getCpf());
-        usuarioEntity.setSenha(passwordEncoder.encode(dto.getSenha()));
+        usuarioEntity.setNome(dto.nome());
+        usuarioEntity.setEmail(dto.email());
+        usuarioEntity.setCpf(dto.cpf());
+        usuarioEntity.setSenha(passwordEncoder.encode(dto.senha()));
         usuarioEntity.setStatus(StatusUsuario.ATIVO);
         usuarioEntity.setPerfil(perfil);
 
@@ -63,15 +59,15 @@ public class UsuarioService {
     public UsuarioResponseDTO atualizarUsuario(Long id, UsuarioUpdateDTO dto) {
         Usuario usuarioEntity = buscarEntidadeUsuarioPorId(id);
 
-        var perfil = perfilRepository.findById(dto.getPerfilId())
+        var perfil = perfilRepository.findById(dto.perfilId())
                 .orElseThrow(() ->
-                        new EntityNotFoundException("Perfil com id: " + dto.getPerfilId() + " não encontrado"));
+                        new EntityNotFoundException("Perfil com id: " + dto.perfilId() + " não encontrado"));
 
-        usuarioEntity.setNome(dto.getNome());
-        usuarioEntity.setEmail(dto.getEmail());
-        usuarioEntity.setCpf(dto.getCpf());
-        usuarioEntity.setSenha(passwordEncoder.encode(dto.getSenha()));
-        usuarioEntity.setStatus(dto.getStatus());
+        usuarioEntity.setNome(dto.nome());
+        usuarioEntity.setEmail(dto.email());
+        usuarioEntity.setCpf(dto.cpf());
+        usuarioEntity.setSenha(passwordEncoder.encode(dto.senha()));
+        usuarioEntity.setStatus(dto.status());
         usuarioEntity.setPerfil(perfil);
 
         usuarioRepository.save(usuarioEntity);
@@ -91,9 +87,13 @@ public class UsuarioService {
     }
 
     private UsuarioResponseDTO converterParaDTO(Usuario usuario) {
-        UsuarioResponseDTO dto = modelMapper.map(usuario, UsuarioResponseDTO.class);
-        dto.setTipoPerfil(usuario.getPerfil().getTipoPerfil());
-
-        return dto;
+        return new UsuarioResponseDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getCpf(),
+                usuario.getStatus(),
+                usuario.getPerfil().getTipoPerfil()
+        );
     }
 }

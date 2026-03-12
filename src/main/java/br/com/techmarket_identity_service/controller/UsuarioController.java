@@ -20,8 +20,11 @@ import java.net.URI;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
+
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @GetMapping
     public ResponseEntity<Page<UsuarioResponseDTO>> listarTodosUsuarios(@PageableDefault(size = 10) Pageable paginacao) {
@@ -38,7 +41,7 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> cadastrarUsuario(@RequestBody @Valid UsuarioCreateDTO dto, UriComponentsBuilder uriBuilder) {
         UsuarioResponseDTO usuario = usuarioService.cadastrarUsuario(dto);
-        URI endereco = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
+        URI endereco = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.id()).toUri();
         return ResponseEntity.created(endereco).body(usuario);
     }
 
