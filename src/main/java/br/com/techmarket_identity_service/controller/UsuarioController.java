@@ -41,7 +41,7 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> cadastrarUsuario(@RequestBody @Valid UsuarioCreateDTO dto, UriComponentsBuilder uriBuilder) {
         UsuarioResponseDTO usuario = usuarioService.cadastrarUsuario(dto);
-        URI endereco = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
+        URI endereco = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.id()).toUri();
         return ResponseEntity.created(endereco).body(usuario);
     }
 
