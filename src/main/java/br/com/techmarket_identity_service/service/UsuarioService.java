@@ -3,6 +3,7 @@ package br.com.techmarket_identity_service.service;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioCreateDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioResponseDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateDTO;
+import br.com.techmarket_identity_service.mapper.UsuarioMapper;
 import br.com.techmarket_identity_service.model.Usuario;
 import br.com.techmarket_identity_service.model.enums.StatusUsuario;
 import br.com.techmarket_identity_service.repository.PerfilRepository;
@@ -30,12 +31,12 @@ public class UsuarioService {
     public Page<UsuarioResponseDTO> obterTodosUsuarios(Pageable paginacao) {
         return usuarioRepository
                 .findAll(paginacao)
-                .map(this::converterParaDTO);
+                .map(UsuarioMapper::converterParaResponseDTO);
     }
 
     public UsuarioResponseDTO obterUsuarioPorId(Long id) {
         Usuario usuario = buscarEntidadeUsuarioPorId(id);
-        return converterParaDTO(usuario);
+        return UsuarioMapper.converterParaResponseDTO(usuario);
     }
 
     @Transactional
@@ -43,16 +44,11 @@ public class UsuarioService {
         var perfil = perfilRepository.findById(dto.perfilId())
                         .orElseThrow(() -> new EntityNotFoundException("Perfil com id: " + dto.perfilId() + " não encontrado"));
 
-        Usuario usuarioEntity = new Usuario();
-        usuarioEntity.setNome(dto.nome());
-        usuarioEntity.setEmail(dto.email());
-        usuarioEntity.setCpf(dto.cpf());
+        Usuario usuarioEntity = UsuarioMapper.converterCreateDTOParaEntity(dto, perfil);
         usuarioEntity.setSenha(passwordEncoder.encode(dto.senha()));
-        usuarioEntity.setStatus(StatusUsuario.ATIVO);
-        usuarioEntity.setPerfil(perfil);
 
-        usuarioEntity = usuarioRepository.save(usuarioEntity);
-        return converterParaDTO(usuarioEntity);
+        usuarioRepository.save(usuarioEntity);
+        return UsuarioMapper.converterParaResponseDTO(usuarioEntity);
     }
 
     @Transactional
@@ -63,16 +59,12 @@ public class UsuarioService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Perfil com id: " + dto.perfilId() + " não encontrado"));
 
-        usuarioEntity.setNome(dto.nome());
-        usuarioEntity.setEmail(dto.email());
-        usuarioEntity.setCpf(dto.cpf());
+        UsuarioMapper.converterUpdateDTOParaEntity(dto, usuarioEntity, perfil);
         usuarioEntity.setSenha(passwordEncoder.encode(dto.senha()));
-        usuarioEntity.setStatus(dto.status());
-        usuarioEntity.setPerfil(perfil);
 
         usuarioRepository.save(usuarioEntity);
 
-        return converterParaDTO(usuarioEntity);
+        return UsuarioMapper.converterParaResponseDTO(usuarioEntity);
     }
 
     @Transactional
@@ -84,16 +76,5 @@ public class UsuarioService {
     private Usuario buscarEntidadeUsuarioPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário com id: " + id + " não encontrado"));
-    }
-
-    private UsuarioResponseDTO converterParaDTO(Usuario usuario) {
-        return new UsuarioResponseDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                usuario.getCpf(),
-                usuario.getStatus(),
-                usuario.getPerfil().getTipoPerfil()
-        );
     }
 }
