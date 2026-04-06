@@ -86,7 +86,6 @@ class UsuarioControllerTest {
                 "João Silva Atualizado",
                 "joao.atualizado@email.com",
                 "98765432101",
-                "senha456",
                 StatusUsuario.ATIVO,
                 2L
         );

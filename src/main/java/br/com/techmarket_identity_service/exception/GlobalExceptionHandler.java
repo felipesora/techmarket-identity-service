@@ -44,4 +44,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+    @ExceptionHandler(SenhaAtualIncorretaException.class)
+    public ResponseEntity<ErrorResponse> handleSenhaAtualIncorreta(SenhaAtualIncorretaException ex) {
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }

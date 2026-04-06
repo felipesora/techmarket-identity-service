@@ -21,10 +21,6 @@ public record UsuarioUpdateDTO (
         @Size(min = 11, max = 11, message = "O cpf deve ter 11 caracteres")
         String cpf,
 
-        @NotBlank(message = "A senha é obrigatória")
-        @Size(min = 6, max = 150, message = "A senha deve ter entre 6 e 100 caracteres")
-        String senha,
-
         @NotNull(message = "Status do usuário é obrigatório")
         StatusUsuario status,
 
