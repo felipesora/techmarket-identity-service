@@ -3,9 +3,10 @@ package br.com.techmarket_identity_service.service;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioCreateDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioResponseDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateDTO;
+import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateSenhaDTO;
+import br.com.techmarket_identity_service.exception.SenhaAtualIncorretaException;
 import br.com.techmarket_identity_service.mapper.UsuarioMapper;
 import br.com.techmarket_identity_service.model.Usuario;
-import br.com.techmarket_identity_service.model.enums.StatusUsuario;
 import br.com.techmarket_identity_service.repository.PerfilRepository;
 import br.com.techmarket_identity_service.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -60,11 +61,23 @@ public class UsuarioService {
                         new EntityNotFoundException("Perfil com id: " + dto.perfilId() + " não encontrado"));
 
         UsuarioMapper.converterUpdateDTOParaEntity(dto, usuarioEntity, perfil);
-        usuarioEntity.setSenha(passwordEncoder.encode(dto.senha()));
-
         usuarioRepository.save(usuarioEntity);
 
         return UsuarioMapper.converterParaResponseDTO(usuarioEntity);
+    }
+
+    @Transactional
+    public void atualizarSenha(Long id, UsuarioUpdateSenhaDTO dto) {
+        Usuario usuario = buscarEntidadeUsuarioPorId(id);
+
+        boolean senhaValida = passwordEncoder.matches(dto.senhaAtual(), usuario.getSenha());
+
+        if (!senhaValida) {
+            throw new SenhaAtualIncorretaException();
+        }
+
+        usuario.setSenha(passwordEncoder.encode(dto.novaSenha()));
+        usuarioRepository.save(usuario);
     }
 
     @Transactional

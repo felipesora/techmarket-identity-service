@@ -3,6 +3,7 @@ package br.com.techmarket_identity_service.controller;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioCreateDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioResponseDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateDTO;
+import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateSenhaDTO;
 import br.com.techmarket_identity_service.service.UsuarioService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -49,6 +50,12 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable @NotNull Long id, @RequestBody @Valid UsuarioUpdateDTO dto) {
         UsuarioResponseDTO atualizado = usuarioService.atualizarUsuario(id, dto);
         return ResponseEntity.ok(atualizado);
+    }
+
+    @PatchMapping("/{id}/senha")
+    public ResponseEntity<Void> atualizarSenha(@PathVariable @NotNull Long id, @RequestBody @Valid UsuarioUpdateSenhaDTO dto) {
+        usuarioService.atualizarSenha(id, dto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

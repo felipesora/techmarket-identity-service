@@ -139,14 +139,12 @@ class UsuarioServiceTest {
                 "João Silva",
                 "joao@email.com",
                 "12345678901",
-                "novaSenha123",
                 StatusUsuario.ATIVO,
                 1L
         );
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
         when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
-        when(passwordEncoder.encode(anyString())).thenReturn("senhaCodificada");
         when(usuarioRepository.save(usuario)).thenReturn(usuario);
 
         UsuarioResponseDTO resultado = usuarioService.atualizarUsuario(1L, updateDTO);
@@ -155,7 +153,6 @@ class UsuarioServiceTest {
         assertEquals(1L, usuario.getId());
 
         verify(usuarioRepository).save(usuario);
-        verify(passwordEncoder).encode(anyString());
     }
 
     @Test
