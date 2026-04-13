@@ -1,6 +1,7 @@
 package br.com.techmarket_identity_service.model;
 
 import br.com.techmarket_identity_service.model.enums.StatusUsuario;
+import br.com.techmarket_identity_service.model.enums.TipoPerfil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,7 +34,7 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, length = 150, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 11, unique = true)
+    @Column(nullable = false, length = 11, unique = false)
     private String cpf;
 
     @Column(nullable = false, length = 100)
@@ -43,13 +44,13 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private StatusUsuario status;
 
-    @ManyToOne
-    @JoinColumn(name = "id_perfil")
-    private Perfil perfil;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "perfil", nullable = false)
+    private TipoPerfil perfil;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + perfil.getTipoPerfil().name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + perfil.name()));
     }
 
     @Override

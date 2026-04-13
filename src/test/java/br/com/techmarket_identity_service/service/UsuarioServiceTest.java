@@ -3,11 +3,9 @@ package br.com.techmarket_identity_service.service;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioCreateDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioResponseDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateDTO;
-import br.com.techmarket_identity_service.model.Perfil;
 import br.com.techmarket_identity_service.model.Usuario;
 import br.com.techmarket_identity_service.model.enums.StatusUsuario;
 import br.com.techmarket_identity_service.model.enums.TipoPerfil;
-import br.com.techmarket_identity_service.repository.PerfilRepository;
 import br.com.techmarket_identity_service.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -39,9 +36,6 @@ class UsuarioServiceTest {
     private UsuarioRepository usuarioRepository;
 
     @Mock
-    private PerfilRepository perfilRepository;
-
-    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
@@ -49,18 +43,13 @@ class UsuarioServiceTest {
 
     private Usuario usuario;
     private UsuarioResponseDTO responseDTO;
-    private Perfil perfil;
 
     @BeforeEach
     void setup() {
 
-        perfil = new Perfil();
-        perfil.setId(1L);
-        perfil.setTipoPerfil(TipoPerfil.ADMINISTRADOR);
-
         usuario = new Usuario();
         usuario.setId(1L);
-        usuario.setPerfil(perfil);
+        usuario.setPerfil(TipoPerfil.ADMINISTRADOR);
 
         responseDTO = new UsuarioResponseDTO(
                 1L,
@@ -116,10 +105,9 @@ class UsuarioServiceTest {
                 "joao@email.com",
                 "12345678901",
                 "senha123",
-                1L
+                TipoPerfil.USUARIO
         );
 
-        when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
         when(passwordEncoder.encode(anyString())).thenReturn("senhaCodificada");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
@@ -127,7 +115,6 @@ class UsuarioServiceTest {
 
         assertNotNull(resultado);
 
-        verify(perfilRepository).findById(1L);
         verify(passwordEncoder).encode(anyString());
         verify(usuarioRepository).save(any(Usuario.class));
     }
@@ -139,12 +126,10 @@ class UsuarioServiceTest {
                 "João Silva",
                 "joao@email.com",
                 "12345678901",
-                StatusUsuario.ATIVO,
-                1L
+                StatusUsuario.ATIVO
         );
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(perfilRepository.findById(1L)).thenReturn(Optional.of(perfil));
         when(usuarioRepository.save(usuario)).thenReturn(usuario);
 
         UsuarioResponseDTO resultado = usuarioService.atualizarUsuario(1L, updateDTO);

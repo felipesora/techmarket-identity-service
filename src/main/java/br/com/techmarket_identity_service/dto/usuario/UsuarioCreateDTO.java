@@ -1,5 +1,6 @@
 package br.com.techmarket_identity_service.dto.usuario;
 
+import br.com.techmarket_identity_service.model.enums.TipoPerfil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -25,6 +26,5 @@ public record UsuarioCreateDTO (
         String senha,
 
         @NotNull(message = "Perfil é obrigatório")
-        @JsonProperty("id_perfil")
-        Long perfilId
+        TipoPerfil perfil
 ){}

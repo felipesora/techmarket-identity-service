@@ -22,9 +22,5 @@ public record UsuarioUpdateDTO (
         String cpf,
 
         @NotNull(message = "Status do usuário é obrigatório")
-        StatusUsuario status,
-
-        @NotNull(message = "Perfil é obrigatório")
-        @JsonProperty("id_perfil")
-        Long perfilId
+        StatusUsuario status
 ) {}
