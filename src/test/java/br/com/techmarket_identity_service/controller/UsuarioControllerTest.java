@@ -79,15 +79,14 @@ class UsuarioControllerTest {
                 "joao@email.com",
                 "12345678901",
                 "senha123",
-                1L
+                TipoPerfil.USUARIO
         );
 
         usuarioUpdateDTO = new UsuarioUpdateDTO(
                 "João Silva Atualizado",
                 "joao.atualizado@email.com",
                 "98765432101",
-                StatusUsuario.ATIVO,
-                2L
+                StatusUsuario.ATIVO
         );
     }
 
@@ -113,7 +112,7 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.content[0].email", is("joao@email.com")))
                 .andExpect(jsonPath("$.content[0].cpf", is("12345678901")))
                 .andExpect(jsonPath("$.content[0].status", is("ATIVO")))
-                .andExpect(jsonPath("$.content[0].tipo_perfil", is("ADMINISTRADOR")));
+                .andExpect(jsonPath("$.content[0].perfil", is("ADMINISTRADOR")));
 
         verify(usuarioService, times(1)).obterTodosUsuarios(any(Pageable.class));
     }
@@ -133,7 +132,7 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.email", is("joao@email.com")))
                 .andExpect(jsonPath("$.cpf", is("12345678901")))
                 .andExpect(jsonPath("$.status", is("ATIVO")))
-                .andExpect(jsonPath("$.tipo_perfil", is("ADMINISTRADOR")));
+                .andExpect(jsonPath("$.perfil", is("ADMINISTRADOR")));
 
         verify(usuarioService, times(1)).obterUsuarioPorId(1L);
     }
@@ -184,7 +183,7 @@ class UsuarioControllerTest {
                 "email-invalido",
                 "123",
                 "senha123",
-                1L
+                TipoPerfil.USUARIO
         );
 
         // Act & Assert
@@ -290,7 +289,7 @@ class UsuarioControllerTest {
                 "teste@email.com",   // email válido
                 "12345678901",       // cpf válido
                 "123",               // senha inválida (<6)
-                1L                   // perfil válido
+                TipoPerfil.USUARIO
         );
 
         // Act & Assert
@@ -329,7 +328,7 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.errors.email", is("Email é obrigatório")))
                 .andExpect(jsonPath("$.errors.cpf", is("CPF é obrigatório")))
                 .andExpect(jsonPath("$.errors.senha", is("A senha é obrigatória")))
-                .andExpect(jsonPath("$.errors.perfilId", is("Perfil é obrigatório")));
+                .andExpect(jsonPath("$.errors.perfil", is("Perfil é obrigatório")));
 
         verify(usuarioService, never()).cadastrarUsuario(any(UsuarioCreateDTO.class));
     }

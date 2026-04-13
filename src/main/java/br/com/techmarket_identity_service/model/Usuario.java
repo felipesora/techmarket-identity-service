@@ -34,7 +34,7 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, length = 150, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 11, unique = true)
+    @Column(nullable = false, length = 11, unique = false)
     private String cpf;
 
     @Column(nullable = false, length = 100)

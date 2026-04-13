@@ -4,6 +4,8 @@ import br.com.techmarket_identity_service.dto.usuario.UsuarioCreateDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioResponseDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateDTO;
 import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateSenhaDTO;
+import br.com.techmarket_identity_service.exception.CpfJaCadastradoException;
+import br.com.techmarket_identity_service.exception.EmailJaCadastradoException;
 import br.com.techmarket_identity_service.exception.SenhaAtualIncorretaException;
 import br.com.techmarket_identity_service.mapper.UsuarioMapper;
 import br.com.techmarket_identity_service.model.Usuario;
@@ -39,6 +41,14 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO cadastrarUsuario(UsuarioCreateDTO dto) {
+        if (usuarioRepository.existsByEmail(dto.email())) {
+            throw new EmailJaCadastradoException();
+        }
+
+        if (usuarioRepository.existsByCpfAndPerfil(dto.cpf(), dto.perfil())) {
+            throw new CpfJaCadastradoException();
+        }
+
         Usuario usuarioEntity = UsuarioMapper.converterCreateDTOParaEntity(dto);
         usuarioEntity.setSenha(passwordEncoder.encode(dto.senha()));
 
