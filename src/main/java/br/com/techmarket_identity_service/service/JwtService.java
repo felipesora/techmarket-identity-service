@@ -25,7 +25,7 @@ public class JwtService {
                     .withIssuer("API TechMarket")
                     .withSubject(usuario.getEmail())
                     .withClaim("id", usuario.getId())
-                    .withClaim("perfil", usuario.getPerfil().getTipoPerfil().name())
+                    .withClaim("perfil", usuario.getPerfil().name())
                     .withExpiresAt(dataExpiracao())
                     .sign(algoritmo);
         } catch (JWTCreationException exception){

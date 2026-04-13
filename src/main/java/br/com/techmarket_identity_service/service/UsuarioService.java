@@ -7,7 +7,6 @@ import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateSenhaDTO;
 import br.com.techmarket_identity_service.exception.SenhaAtualIncorretaException;
 import br.com.techmarket_identity_service.mapper.UsuarioMapper;
 import br.com.techmarket_identity_service.model.Usuario;
-import br.com.techmarket_identity_service.repository.PerfilRepository;
 import br.com.techmarket_identity_service.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -21,12 +20,10 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
-    private final PerfilRepository perfilRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, PerfilRepository perfilRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
-        this.perfilRepository = perfilRepository;
     }
 
     public Page<UsuarioResponseDTO> obterTodosUsuarios(Pageable paginacao) {
@@ -42,10 +39,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO cadastrarUsuario(UsuarioCreateDTO dto) {
-        var perfil = perfilRepository.findById(dto.perfilId())
-                        .orElseThrow(() -> new EntityNotFoundException("Perfil com id: " + dto.perfilId() + " não encontrado"));
-
-        Usuario usuarioEntity = UsuarioMapper.converterCreateDTOParaEntity(dto, perfil);
+        Usuario usuarioEntity = UsuarioMapper.converterCreateDTOParaEntity(dto);
         usuarioEntity.setSenha(passwordEncoder.encode(dto.senha()));
 
         usuarioRepository.save(usuarioEntity);
@@ -56,11 +50,7 @@ public class UsuarioService {
     public UsuarioResponseDTO atualizarUsuario(Long id, UsuarioUpdateDTO dto) {
         Usuario usuarioEntity = buscarEntidadeUsuarioPorId(id);
 
-        var perfil = perfilRepository.findById(dto.perfilId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Perfil com id: " + dto.perfilId() + " não encontrado"));
-
-        UsuarioMapper.converterUpdateDTOParaEntity(dto, usuarioEntity, perfil);
+        UsuarioMapper.converterUpdateDTOParaEntity(dto, usuarioEntity);
         usuarioRepository.save(usuarioEntity);
 
         return UsuarioMapper.converterParaResponseDTO(usuarioEntity);

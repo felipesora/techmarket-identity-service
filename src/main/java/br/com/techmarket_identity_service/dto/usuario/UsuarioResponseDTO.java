@@ -5,7 +5,7 @@ import br.com.techmarket_identity_service.model.enums.TipoPerfil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "id_usuario", "nome", "email", "cpf", "status", "tipo_perfil"})
+@JsonPropertyOrder({ "id_usuario", "nome", "email", "cpf", "status", "perfil"})
 public record UsuarioResponseDTO (
         @JsonProperty("id_usuario")
         Long id,
@@ -13,6 +13,5 @@ public record UsuarioResponseDTO (
         String email,
         String cpf,
         StatusUsuario status,
-        @JsonProperty("tipo_perfil")
-        TipoPerfil tipoPerfil
+        TipoPerfil perfil
 ){}
