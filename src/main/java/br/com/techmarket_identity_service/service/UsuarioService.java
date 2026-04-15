@@ -9,6 +9,8 @@ import br.com.techmarket_identity_service.exception.EmailJaCadastradoException;
 import br.com.techmarket_identity_service.exception.SenhaAtualIncorretaException;
 import br.com.techmarket_identity_service.mapper.UsuarioMapper;
 import br.com.techmarket_identity_service.model.Usuario;
+import br.com.techmarket_identity_service.model.enums.StatusUsuario;
+import br.com.techmarket_identity_service.model.enums.TipoPerfil;
 import br.com.techmarket_identity_service.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -84,6 +86,13 @@ public class UsuarioService {
     public void deletarUsuario(Long id) {
         var usuario = buscarEntidadeUsuarioPorId(id);
         usuarioRepository.delete(usuario);
+    }
+
+    public long contarUsuariosAtivosComuns() {
+        return usuarioRepository.countByStatusAndPerfil(
+                StatusUsuario.ATIVO,
+                TipoPerfil.USUARIO
+        );
     }
 
     private Usuario buscarEntidadeUsuarioPorId(Long id) {

@@ -39,6 +39,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
+    @GetMapping("/total-usuarios-ativos")
+    public ResponseEntity<Long> totalUsuariosAtivos() {
+        long total = usuarioService.contarUsuariosAtivosComuns();
+        return ResponseEntity.ok(total);
+    }
+
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> cadastrarUsuario(@RequestBody @Valid UsuarioCreateDTO dto, UriComponentsBuilder uriBuilder) {
         UsuarioResponseDTO usuario = usuarioService.cadastrarUsuario(dto);
