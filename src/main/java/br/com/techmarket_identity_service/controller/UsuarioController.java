@@ -1,9 +1,7 @@
 package br.com.techmarket_identity_service.controller;
 
-import br.com.techmarket_identity_service.dto.usuario.UsuarioCreateDTO;
-import br.com.techmarket_identity_service.dto.usuario.UsuarioResponseDTO;
-import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateDTO;
-import br.com.techmarket_identity_service.dto.usuario.UsuarioUpdateSenhaDTO;
+import br.com.techmarket_identity_service.dto.usuario.*;
+import br.com.techmarket_identity_service.model.enums.TipoPerfil;
 import br.com.techmarket_identity_service.service.UsuarioService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +28,18 @@ public class UsuarioController {
     @GetMapping
     public ResponseEntity<Page<UsuarioResponseDTO>> listarTodosUsuarios(@PageableDefault(size = 10) Pageable paginacao) {
         Page<UsuarioResponseDTO> usuarios = usuarioService.obterTodosUsuarios(paginacao);
+        return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/admins")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarAdmins(@PageableDefault(size = 10) Pageable paginacao) {
+        Page<UsuarioResponseDTO> admins = usuarioService.obterUsuariosPorPerfil(TipoPerfil.ADMINISTRADOR, paginacao);
+        return ResponseEntity.ok(admins);
+    }
+
+    @GetMapping("/usuarios-comuns")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarUsuariosComuns(@PageableDefault(size = 10) Pageable paginacao) {
+        Page<UsuarioResponseDTO> usuarios = usuarioService.obterUsuariosPorPerfil(TipoPerfil.USUARIO, paginacao);
         return ResponseEntity.ok(usuarios);
     }
 
@@ -61,6 +71,15 @@ public class UsuarioController {
     @PatchMapping("/{id}/senha")
     public ResponseEntity<Void> atualizarSenha(@PathVariable @NotNull Long id, @RequestBody @Valid UsuarioUpdateSenhaDTO dto) {
         usuarioService.atualizarSenha(id, dto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> atualizarStatus(
+            @PathVariable @NotNull Long id,
+            @RequestBody @Valid UsuarioUpdateStatusDTO dto
+    ) {
+        usuarioService.atualizarStatus(id, dto.status());
         return ResponseEntity.noContent().build();
     }
 
