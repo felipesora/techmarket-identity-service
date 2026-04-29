@@ -41,6 +41,12 @@ public class UsuarioService {
         return UsuarioMapper.converterParaResponseDTO(usuario);
     }
 
+    public Page<UsuarioResponseDTO> obterUsuariosPorPerfil(TipoPerfil perfil, Pageable paginacao) {
+        return usuarioRepository
+                .findByPerfil(perfil, paginacao)
+                .map(UsuarioMapper::converterParaResponseDTO);
+    }
+
     @Transactional
     public UsuarioResponseDTO cadastrarUsuario(UsuarioCreateDTO dto) {
         if (usuarioRepository.existsByEmail(dto.email())) {
@@ -79,6 +85,15 @@ public class UsuarioService {
         }
 
         usuario.setSenha(passwordEncoder.encode(dto.novaSenha()));
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void atualizarStatus(Long id, StatusUsuario status) {
+        Usuario usuario = buscarEntidadeUsuarioPorId(id);
+
+        usuario.setStatus(status);
+
         usuarioRepository.save(usuario);
     }
 
