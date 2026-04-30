@@ -17,8 +17,6 @@
 
 ---
 
----
-
 ## 📋 Índice
 
 - [Sobre o Identity Service](#-sobre-o-identity-service)
