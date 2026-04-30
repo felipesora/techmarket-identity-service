@@ -48,6 +48,6 @@ public class JwtService {
     }
 
     private Instant dataExpiracao() {
-        return LocalDateTime.now().plusDays(30).toInstant(ZoneOffset.of("-03:00"));
+        return LocalDateTime.now().plusDays(5).toInstant(ZoneOffset.of("-03:00"));
     }
 }
