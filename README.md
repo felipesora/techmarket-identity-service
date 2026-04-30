@@ -24,10 +24,10 @@
 - [Arquitetura e Papel no Sistema](#-arquitetura-e-papel-no-sistema)
 - [Tecnologias Utilizadas](#️-tecnologias-utilizadas)
 - [Dependências Relevantes](#-dependências-relevantes)
-- [Repositórios](#-repositórios)
 - [Fluxo de Autenticação](#-fluxo-de-autenticação)
 - [Boas Práticas Aplicadas](#-boas-práticas-aplicadas)
 - [Integração com Outros Serviços](#-integração-com-outros-serviços)
+- [Repositórios](#-repositórios)
 - [Autor](#-autor)
 
 --- 
@@ -123,24 +123,6 @@ Principais dependências do projeto:
 
 ---
 
-## 📁 Repositórios
-
-O TechMarket é organizado como um **monorepo com submódulos Git**. Cada serviço possui seu próprio repositório:
-
-| Serviço | Descrição | Repositório |
-|---------|-----------|-------------|
-| 🗂️ **techmarket** | Repositório principal (monorepo + Docker Compose) | [github.com/felipesora/techmarket](https://github.com/felipesora/techmarket) |
-| 🔍 **discovery-service** | Eureka Server para service discovery | [github.com/felipesora/techmarket-discovery-service](https://github.com/felipesora/techmarket-discovery-service) |
-| 🌐 **gateway-service** | API Gateway com Spring Cloud Gateway | [github.com/felipesora/techmarket-gateway-service](https://github.com/felipesora/techmarket-gateway-service) |
-| 🔐 **identity-service** | Autenticação e gerenciamento de usuários (JWT) | [github.com/felipesora/techmarket-identity-service](https://github.com/felipesora/techmarket-identity-service) |
-| 📦 **product-service** | Catálogo e gerenciamento de produtos | [github.com/felipesora/techmarket-product-service](https://github.com/felipesora/techmarket-product-service) |
-| 🛒 **order-service** | Criação e acompanhamento de pedidos | [github.com/felipesora/techmarket-order-service](https://github.com/felipesora/techmarket-order-service) |
-| 💳 **payment-service** | Processamento de pagamentos via mensageria | [github.com/felipesora/techmarket-payment-service](https://github.com/felipesora/techmarket-payment-service) |
-| 🖥️ **techmarket-web** | Frontend da plataforma em Angular | [github.com/felipesora/techmarket-web](https://github.com/felipesora/techmarket-web) |
-
-
----
-
 ## 🔐 Fluxo de Autenticação
 
 1. Usuário envia credenciais (email/senha)
@@ -169,9 +151,27 @@ O TechMarket é organizado como um **monorepo com submódulos Git**. Cada servi�
 
 | Serviço         | Integração           |
 | --------------- | -------------------- |
-| Gateway         | Validação de token   |
+| Gateway         | Roteamento do serviço   |
 | Discovery       | Registro via Eureka  |
 | Demais serviços | Usam o token JWT |
+
+---
+
+## 📁 Repositórios
+
+O TechMarket é organizado como um **monorepo com submódulos Git**. Cada serviço possui seu próprio repositório:
+
+| Serviço | Descrição | Repositório |
+|---------|-----------|-------------|
+| 🗂️ **techmarket** | Repositório principal (monorepo + Docker Compose) | [github.com/felipesora/techmarket](https://github.com/felipesora/techmarket) |
+| 🔍 **discovery-service** | Eureka Server para service discovery | [github.com/felipesora/techmarket-discovery-service](https://github.com/felipesora/techmarket-discovery-service) |
+| 🌐 **gateway-service** | API Gateway com Spring Cloud Gateway | [github.com/felipesora/techmarket-gateway-service](https://github.com/felipesora/techmarket-gateway-service) |
+| 🔐 **identity-service** | Autenticação e gerenciamento de usuários (JWT) | [github.com/felipesora/techmarket-identity-service](https://github.com/felipesora/techmarket-identity-service) |
+| 📦 **product-service** | Catálogo e gerenciamento de produtos | [github.com/felipesora/techmarket-product-service](https://github.com/felipesora/techmarket-product-service) |
+| 🛒 **order-service** | Criação e acompanhamento de pedidos | [github.com/felipesora/techmarket-order-service](https://github.com/felipesora/techmarket-order-service) |
+| 💳 **payment-service** | Processamento de pagamentos via mensageria | [github.com/felipesora/techmarket-payment-service](https://github.com/felipesora/techmarket-payment-service) |
+| 🖥️ **techmarket-web** | Frontend da plataforma em Angular | [github.com/felipesora/techmarket-web](https://github.com/felipesora/techmarket-web) |
+
 
 ---
 
